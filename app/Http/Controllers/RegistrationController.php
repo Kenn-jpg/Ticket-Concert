@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRegistrationRequest;
-use App\Mail\RegistrationEmail;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class RegistrationController extends Controller
 {
     /**
-     * Store a new ticket registration from the landing page.
+     * Store a new ticket registration and continue to its payment page.
      */
     public function store(StoreRegistrationRequest $request): RedirectResponse
     {
@@ -28,16 +27,6 @@ class RegistrationController extends Controller
             'total_price' => Registration::TICKET_PRICES[$ticketType] * $quantity,
         ]);
 
-        Mail::send(new RegistrationEmail($registration));
-
-        return redirect()
-            ->route('home')
-            ->with('success', sprintf(
-                'Pendaftaran berhasil, %s! Pesanan %d tiket (total %s) sudah kami catat, dan email konfirmasi sudah dikirim ke %s. Belum masuk? Coba cek folder Spam.',
-                $registration->name,
-                $registration->quantity,
-                $registration->formatted_total_price,
-                $registration->email,
-            ));
+        return redirect(URL::signedRoute('registrations.payment.show', $registration));
     }
 }

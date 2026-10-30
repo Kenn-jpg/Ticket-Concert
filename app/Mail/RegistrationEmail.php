@@ -25,7 +25,7 @@ class RegistrationEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Pendaftaran Midnight Echoes berhasil ({$this->registration->code})",
+            subject: "E-ticket Midnight Echoes ({$this->registration->code})",
             to: $this->registration->email,
         );
     }
@@ -39,6 +39,7 @@ class RegistrationEmail extends Mailable
             view: 'mail-template.registration-successful',
             with: [
                 'eventDate' => $this->registration->created_at->timezone('Asia/Jakarta')->locale('id'),
+                'paidAt' => $this->registration->paid_at?->timezone('Asia/Jakarta')->locale('id'),
             ],
         );
     }

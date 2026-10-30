@@ -15,6 +15,16 @@ class Registration extends Model
     use HasFactory;
 
     /**
+     * Status of a registration that has not been paid yet.
+     */
+    public const STATUS_PENDING = 'pending';
+
+    /**
+     * Status of a registration that has been paid.
+     */
+    public const STATUS_PAID = 'paid';
+
+    /**
      * Ticket prices in Rupiah, keyed by ticket type.
      *
      * @var array<string, int>
@@ -69,7 +79,16 @@ class Registration extends Model
         return [
             'quantity' => 'integer',
             'total_price' => 'integer',
+            'paid_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Determine whether the registration has been paid.
+     */
+    public function isPaid(): bool
+    {
+        return $this->status === self::STATUS_PAID;
     }
 
     /**
@@ -78,6 +97,14 @@ class Registration extends Model
     protected function code(): Attribute
     {
         return Attribute::get(fn (): string => 'ME26-'.str_pad((string) $this->id, 5, '0', STR_PAD_LEFT));
+    }
+
+    /**
+     * Get the simulated payment code, e.g. 8808 0000 0000 0001.
+     */
+    protected function paymentCode(): Attribute
+    {
+        return Attribute::get(fn (): string => implode(' ', str_split('8808'.str_pad((string) $this->id, 12, '0', STR_PAD_LEFT), 4)));
     }
 
     /**

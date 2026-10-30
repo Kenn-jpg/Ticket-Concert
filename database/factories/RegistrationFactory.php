@@ -28,6 +28,18 @@ class RegistrationFactory extends Factory
             'quantity' => $quantity,
             'payment_method' => fake()->randomElement(Registration::PAYMENT_METHODS),
             'total_price' => Registration::TICKET_PRICES[$ticketType] * $quantity,
+            'status' => Registration::STATUS_PENDING,
         ];
+    }
+
+    /**
+     * Indicate that the registration has been paid.
+     */
+    public function paid(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => Registration::STATUS_PAID,
+            'paid_at' => now(),
+        ]);
     }
 }
