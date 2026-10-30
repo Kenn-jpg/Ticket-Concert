@@ -37,8 +37,8 @@
                 </div>
                 <div><span>Nama</span><span>{{ $registration->name }}</span></div>
                 <div><span>Tiket</span><span>{{ $registration->quantity }} × {{ $registration->ticket_label }}</span></div>
-                <div><span>Metode pembayaran</span><span>{{ $registration->payment_label }}</span></div>
                 @if ($registration->isPaid())
+                    <div><span>Metode pembayaran</span><span>{{ $registration->payment_label }}</span></div>
                     <div><span>Dibayar pada</span><span>{{ $registration->paid_at->timezone('Asia/Jakarta')->locale('id')->translatedFormat('j F Y, H.i') }} WIB</span></div>
                 @endif
             </div>
@@ -49,6 +49,17 @@
                 <div class="notice" role="status">Tunjukkan e-ticket di email beserta kode <strong>{{ $registration->code }}</strong> dan identitas yang sesuai saat menukarkan tiket di pintu masuk.</div>
                 <a class="button secondary" href="{{ route('home') }}">Kembali ke beranda</a>
             @else
+                <form class="method-switch" method="POST" action="{{ URL::signedRoute('registrations.payment-method.update', $registration) }}">
+                    @csrf
+                    @method('PUT')
+                    <p id="method-label">Metode pembayaran</p>
+                    <div class="method-options" role="group" aria-labelledby="method-label">
+                        @foreach (App\Models\Registration::PAYMENT_LABELS as $method => $label)
+                            <button type="submit" name="payment" value="{{ $method }}" aria-pressed="{{ $registration->payment_method === $method ? 'true' : 'false' }}" @disabled($registration->payment_method === $method)>{{ $label }}</button>
+                        @endforeach
+                    </div>
+                </form>
+
                 <div class="pay-box">
                     @if ($registration->payment_method === 'qris')
                         <p class="pay-label">Scan QRIS</p>

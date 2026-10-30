@@ -154,6 +154,45 @@ class RegistrationTest extends TestCase
             ->assertDontSee('Saya sudah bayar');
     }
 
+    public function test_payment_method_can_be_changed_before_paying(): void
+    {
+        $registration = Registration::factory()->create(['payment_method' => 'qris']);
+
+        $this->put(URL::signedRoute('registrations.payment-method.update', $registration), ['payment' => 'bank'])
+            ->assertRedirect(URL::signedRoute('registrations.payment.show', $registration));
+
+        $this->assertSame('bank', $registration->refresh()->payment_method);
+    }
+
+    public function test_payment_method_must_be_valid(): void
+    {
+        $registration = Registration::factory()->create(['payment_method' => 'qris']);
+
+        $this->put(URL::signedRoute('registrations.payment-method.update', $registration), ['payment' => 'cash'])
+            ->assertSessionHasErrors('payment');
+
+        $this->assertSame('qris', $registration->refresh()->payment_method);
+    }
+
+    public function test_payment_method_cannot_be_changed_after_paying(): void
+    {
+        $registration = Registration::factory()->paid()->create(['payment_method' => 'qris']);
+
+        $this->put(URL::signedRoute('registrations.payment-method.update', $registration), ['payment' => 'bank']);
+
+        $this->assertSame('qris', $registration->refresh()->payment_method);
+    }
+
+    public function test_changing_payment_method_requires_a_valid_signature(): void
+    {
+        $registration = Registration::factory()->create(['payment_method' => 'qris']);
+
+        $this->put(route('registrations.payment-method.update', $registration), ['payment' => 'bank'])
+            ->assertForbidden();
+
+        $this->assertSame('qris', $registration->refresh()->payment_method);
+    }
+
     public function test_e_ticket_email_shows_order_details(): void
     {
         $registration = Registration::factory()->paid()->create([
@@ -174,5 +213,6 @@ class RegistrationTest extends TestCase
         $mail->assertSeeInHtml('Transfer bank');
         $mail->assertSeeInHtml('Rp3.000.000');
         $mail->assertSeeInHtml('Lunas');
+        $mail->assertSeeInHtml(URL::signedRoute('registrations.payment.show', $registration));
     }
 }

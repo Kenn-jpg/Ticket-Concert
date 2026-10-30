@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\URL;
 
 class RegistrationEmail extends Mailable
 {
@@ -40,6 +41,7 @@ class RegistrationEmail extends Mailable
             with: [
                 'eventDate' => $this->registration->created_at->timezone('Asia/Jakarta')->locale('id'),
                 'paidAt' => $this->registration->paid_at?->timezone('Asia/Jakarta')->locale('id'),
+                'ticketUrl' => URL::signedRoute('registrations.payment.show', $this->registration),
             ],
         );
     }

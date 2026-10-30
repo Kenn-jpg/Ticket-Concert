@@ -50,7 +50,13 @@
         .badge.pending { color:#b4522f; background:#fbeee7; } .badge.paid { color:var(--green); background:#e6f2c4; }
         .order-lines { display:grid; gap:14px; font:14px/1.5 Arial, sans-serif; }
         .order-lines div { display:flex; justify-content:space-between; align-items:center; gap:20px; } .order-lines span:first-child { color:var(--muted); } .order-lines span:last-child { text-align:right; font-weight:bold; }
-        .pay-box { margin-top:30px; border:1px dashed #b9c0b6; padding:26px 22px; text-align:center; background:#fff; }
+        .method-switch { margin-top:30px; }
+        .method-switch p { margin:0 0 10px; font:700 12px Arial, sans-serif; letter-spacing:.04em; }
+        .method-options { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+        .method-options button { min-height:44px; padding:0 8px; border:1px solid var(--line); color:var(--ink); background:#fff; font:700 12px Arial, sans-serif; letter-spacing:.04em; text-transform:none; }
+        .method-options button:hover:not(:disabled) { border-color:var(--green); background:#f3f6ee; transform:none; }
+        .method-options button[aria-pressed="true"], .method-options button[aria-pressed="true"]:disabled { cursor:default; border-color:var(--green); color:#fff; background:var(--green); }
+        .pay-box { margin-top:16px; border:1px dashed #b9c0b6; padding:26px 22px; text-align:center; background:#fff; }
         .pay-label { margin:0 0 14px; color:var(--muted); font:700 11px Arial, sans-serif; letter-spacing:.14em; text-transform:uppercase; }
         .pay-code { margin:0; color:var(--ink); font:600 clamp(20px,3vw,26px) 'Courier New', monospace; letter-spacing:.06em; }
         .pay-help { margin:14px 0 0; color:var(--muted); font:13px/1.6 Arial, sans-serif; }

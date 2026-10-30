@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RegistrationPaymentController;
+use App\Http\Controllers\RegistrationPaymentMethodController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,4 +16,5 @@ Route::post('/registrations', [RegistrationController::class, 'store'])->name('r
 Route::middleware('signed')->group(function () {
     Route::get('/registrations/{registration}/payment', [RegistrationPaymentController::class, 'show'])->name('registrations.payment.show');
     Route::post('/registrations/{registration}/payment', [RegistrationPaymentController::class, 'store'])->name('registrations.payment.store');
+    Route::put('/registrations/{registration}/payment-method', [RegistrationPaymentMethodController::class, 'update'])->name('registrations.payment-method.update');
 });

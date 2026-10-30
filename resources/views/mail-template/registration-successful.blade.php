@@ -140,7 +140,7 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                                 <tr>
                                     <td align="center" style="background-color:#1f5b47;">
-                                        <a href="{{ route('home') }}" style="display:block; padding:18px 24px; font:bold 13px Arial, sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#ffffff; text-decoration:none;">Lihat halaman acara</a>
+                                        <a href="{{ $ticketUrl }}" style="display:block; padding:18px 24px; font:bold 13px Arial, sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#ffffff; text-decoration:none;">Lihat e-ticket</a>
                                     </td>
                                 </tr>
                             </table>
