@@ -32,7 +32,8 @@
         .terms { display:flex; align-items:flex-start; gap:10px; margin:22px 0; color:var(--muted); font:12px/1.5 Arial, sans-serif; }
         .terms input { width:16px; min-height:16px; margin-top:1px; accent-color:var(--green); }
         button { width:100%; min-height:54px; border:0; cursor:pointer; color:#fff; background:var(--green); font:700 13px Arial, sans-serif; letter-spacing:.1em; text-transform:uppercase; transition:background .2s, transform .2s; }
-        button:hover { background:#153f32; transform:translateY(-2px); }
+        button:hover:not(:disabled) { background:#153f32; transform:translateY(-2px); }
+        button:disabled { cursor:not-allowed; color:#8a938d; background:#d9ddd5; }
         .success { display:none; margin-top:18px; border-left:3px solid var(--orange); padding:12px 14px; color:var(--green); background:#f8f2df; font:13px/1.5 Arial, sans-serif; }
         .success.show { display:block; }
         .error { color:var(--orange); font:12px Arial, sans-serif; }
@@ -50,7 +51,7 @@
                 <h1 id="event-title">Midnight<br>Echoes</h1>
                 <p class="lead">Satu malam, tiga panggung, dan suara yang akan tinggal lebih lama dari konsernya.</p>
                 <div class="event-meta">
-                    <div><span>Tanggal</span><span>Sabtu, 24 Oktober 2026</span></div>
+                    <div><span>Tanggal</span><span>{{ $eventDate->locale('id')->translatedFormat('l, j F Y') }}</span></div>
                     <div><span>Lokasi</span><span>Jiexpo Kemayoran, Jakarta</span></div>
                     <div><span>Pintu dibuka</span><span>18.00 WIB</span></div>
                 </div>
@@ -73,7 +74,7 @@
                     <div class="summary"><span>Total pembayaran</span><strong id="total">Rp350.000</strong></div>
                     <label class="terms"><input type="checkbox" id="agreement" name="agreement" value="1" @checked(old('agreement')) required><span>Saya menyetujui syarat pembelian dan memastikan data yang diisi sudah benar.</span></label>
                     @error('agreement')<p class="error">{{ $message }}</p>@enderror
-                    <button type="submit">Daftar dan lanjutkan pembayaran</button>
+                    <button type="submit" id="submit-button" @disabled(! old('agreement'))>Daftar dan lanjutkan pembayaran</button>
                     <div @class(['success', 'show' => session('success')]) id="success" role="status">{{ session('success') }}</div>
                 </form>
             </section>
@@ -84,6 +85,8 @@
         const ticket = document.getElementById('ticket');
         const quantity = document.getElementById('quantity');
         const total = document.getElementById('total');
+        const agreement = document.getElementById('agreement');
+        const submitButton = document.getElementById('submit-button');
         const formatRupiah = (value) => new Intl.NumberFormat('id-ID', { style:'currency', currency:'IDR', maximumFractionDigits:0 }).format(value);
         const updateTotal = () => {
             const price = Number(ticket.selectedOptions[0].dataset.price);
@@ -93,6 +96,7 @@
         };
         ticket.addEventListener('change', updateTotal);
         quantity.addEventListener('input', updateTotal);
+        agreement.addEventListener('change', () => { submitButton.disabled = ! agreement.checked; });
         updateTotal();
     </script>
 </body>

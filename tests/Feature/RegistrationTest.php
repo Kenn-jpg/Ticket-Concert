@@ -74,7 +74,18 @@ class RegistrationTest extends TestCase
         $this->followingRedirects()
             ->post(route('registrations.store'), $this->validPayload())
             ->assertOk()
-            ->assertSee('Terima kasih, Budi Santoso.');
+            ->assertSee('Pendaftaran berhasil, Budi Santoso!')
+            ->assertSee('Pesanan 2 tiket (total Rp1.500.000)')
+            ->assertSee('budi@example.com');
+    }
+
+    public function test_landing_page_shows_today_date_in_jakarta_time(): void
+    {
+        $this->travelTo(now('Asia/Jakarta')->setDate(2027, 1, 1)->setTime(0, 30));
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('Jumat, 1 Januari 2027');
     }
 
     public function test_registration_requires_valid_input(): void
