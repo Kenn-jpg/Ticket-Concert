@@ -2,13 +2,22 @@
 
 namespace Tests\Feature;
 
+use App\Mail\RegistrationEmail;
 use App\Models\Registration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Mail::fake();
+    }
 
     /**
      * Get a valid registration payload from the landing page form.
@@ -50,6 +59,16 @@ class RegistrationTest extends TestCase
         ]);
     }
 
+    public function test_registration_email_is_sent_to_registrant(): void
+    {
+        $this->post(route('registrations.store'), $this->validPayload());
+
+        Mail::assertSent(RegistrationEmail::class, function (RegistrationEmail $mail): bool {
+            return $mail->hasTo('budi@example.com')
+                && $mail->user_name === 'Budi Santoso';
+        });
+    }
+
     public function test_success_message_is_shown_on_landing_page(): void
     {
         $this->followingRedirects()
@@ -71,5 +90,6 @@ class RegistrationTest extends TestCase
 
         $response->assertSessionHasErrors(['email', 'phone', 'ticket', 'quantity', 'payment', 'agreement']);
         $this->assertDatabaseCount('registrations', 0);
+        Mail::assertNothingSent();
     }
 }

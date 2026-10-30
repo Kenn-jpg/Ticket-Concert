@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRegistrationRequest;
+use App\Mail\RegistrationEmail;
 use App\Models\Registration;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
 
 class RegistrationController extends Controller
 {
@@ -25,6 +27,8 @@ class RegistrationController extends Controller
             'payment_method' => $request->validated('payment'),
             'total_price' => Registration::TICKET_PRICES[$ticketType] * $quantity,
         ]);
+
+        Mail::send(new RegistrationEmail($registration->email, $registration->name));
 
         return redirect()
             ->route('home')

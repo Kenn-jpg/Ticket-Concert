@@ -1,0 +1,1 @@
+<h1>Terima kasih, {{ $user_name }}. Anda telah berhasil registrasi di sistem kami.</h1>
