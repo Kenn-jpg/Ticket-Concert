@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreRegistrationRequest;
+use App\Models\Registration;
+use Illuminate\Http\RedirectResponse;
+
+class RegistrationController extends Controller
+{
+    /**
+     * Store a new ticket registration from the landing page.
+     */
+    public function store(StoreRegistrationRequest $request): RedirectResponse
+    {
+        $ticketType = $request->validated('ticket');
+        $quantity = (int) $request->validated('quantity');
+
+        $registration = Registration::create([
+            'name' => $request->validated('name'),
+            'email' => $request->validated('email'),
+            'phone' => $request->validated('phone'),
+            'ticket_type' => $ticketType,
+            'quantity' => $quantity,
+            'payment_method' => $request->validated('payment'),
+            'total_price' => Registration::TICKET_PRICES[$ticketType] * $quantity,
+        ]);
+
+        return redirect()
+            ->route('home')
+            ->with('success', "Terima kasih, {$registration->name}. Data pendaftaran tersimpan. Detail pembayaran akan dikirim ke email kamu.");
+    }
+}
