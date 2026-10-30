@@ -28,7 +28,7 @@ class RegistrationController extends Controller
             'total_price' => Registration::TICKET_PRICES[$ticketType] * $quantity,
         ]);
 
-        Mail::send(new RegistrationEmail($registration->email, $registration->name));
+        Mail::send(new RegistrationEmail($registration));
 
         return redirect()
             ->route('home')
@@ -36,7 +36,7 @@ class RegistrationController extends Controller
                 'Pendaftaran berhasil, %s! Pesanan %d tiket (total %s) sudah kami catat, dan email konfirmasi sudah dikirim ke %s. Belum masuk? Coba cek folder Spam.',
                 $registration->name,
                 $registration->quantity,
-                'Rp'.number_format($registration->total_price, 0, ',', '.'),
+                $registration->formatted_total_price,
                 $registration->email,
             ));
     }

@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Registration;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
@@ -16,15 +17,7 @@ class RegistrationEmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public string $user_email;
-
-    public string $user_name;
-
-    public function __construct($user_email, $user_name)
-    {
-        $this->user_email = $user_email;
-        $this->user_name = $user_name;
-    }
+    public function __construct(public Registration $registration) {}
 
     /**
      * Get the message envelope.
@@ -32,8 +25,8 @@ class RegistrationEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your Registration is Successful',
-            to: $this->user_email,
+            subject: "Pendaftaran Midnight Echoes berhasil ({$this->registration->code})",
+            to: $this->registration->email,
         );
     }
 
@@ -45,7 +38,7 @@ class RegistrationEmail extends Mailable
         return new Content(
             view: 'mail-template.registration-successful',
             with: [
-                'user_name' => $this->user_name,
+                'eventDate' => $this->registration->created_at->timezone('Asia/Jakarta')->locale('id'),
             ],
         );
     }

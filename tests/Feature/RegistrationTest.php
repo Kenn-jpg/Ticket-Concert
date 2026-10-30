@@ -63,10 +63,33 @@ class RegistrationTest extends TestCase
     {
         $this->post(route('registrations.store'), $this->validPayload());
 
-        Mail::assertSent(RegistrationEmail::class, function (RegistrationEmail $mail): bool {
+        $registration = Registration::sole();
+
+        Mail::assertSent(RegistrationEmail::class, function (RegistrationEmail $mail) use ($registration): bool {
             return $mail->hasTo('budi@example.com')
-                && $mail->user_name === 'Budi Santoso';
+                && $mail->registration->is($registration);
         });
+    }
+
+    public function test_registration_email_shows_order_details(): void
+    {
+        $registration = Registration::factory()->create([
+            'name' => 'Budi Santoso',
+            'ticket_type' => 'vip',
+            'quantity' => 2,
+            'payment_method' => 'bank',
+            'total_price' => 3000000,
+        ]);
+
+        $mail = new RegistrationEmail($registration);
+
+        $mail->assertHasSubject("Pendaftaran Midnight Echoes berhasil ({$registration->code})");
+        $mail->assertSeeInHtml('Budi Santoso');
+        $mail->assertSeeInHtml($registration->code);
+        $mail->assertSeeInHtml('VIP');
+        $mail->assertSeeInHtml('2 tiket');
+        $mail->assertSeeInHtml('Transfer bank');
+        $mail->assertSeeInHtml('Rp3.000.000');
     }
 
     public function test_success_message_is_shown_on_landing_page(): void
